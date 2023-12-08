@@ -4,26 +4,26 @@
 #include <ThreeWire.h>
 
 // Serial
-const int SERIAL_SPEED =       9600;
+const int SERIAL_SPEED =        9600;
 // RA drive
-const int RA_DIRECTION_PIN =   2;
-const int RA_SPEED_PIN =       3;
-const int RA_GEAR_TRAIN =      2;
-const int RA_DEFAULT_RPM =     800;
-const int RA_MOTOR_STEPS =     800;
-const int RA_MOUNT_STEPS =     130;
-const int RA_MICRO_STEPS =     16;
-const int motorInterfaceType = 1;
-const int INTERATION_STEPS =   10000;
+const int RA_DIRECTION_PIN =    2;
+const int RA_SPEED_PIN =        3;
+const long RA_GEAR_TRAIN =      2;
+const int RA_DEFAULT_RPM =      3;
+const long RA_MOTOR_STEPS =     800;
+const long RA_MOUNT_STEPS =     130;
+const long RA_MICRO_STEPS =     16;
+const int motorInterfaceType =  1;
+const int INTERATION_STEPS =    10000;
 // Watch
-const int  WATCH_CLK_PIN =     4;
-const int  WATCH_DAT_PIN =     5;
-const int  WATCH_RST_PIN =     6;
-const int HOURS_IN_SEC =       60 * 60;
+const int  WATCH_CLK_PIN =      4;
+const int  WATCH_DAT_PIN =      5;
+const int  WATCH_RST_PIN =      6;
+const int HOURS_IN_SEC =        60 * 60;
 
-double stepsPerFullTurn = RA_MOUNT_STEPS * RA_MOTOR_STEPS * RA_GEAR_TRAIN * RA_MICRO_STEPS;
+long stepsPerFullTurn = RA_MOUNT_STEPS * RA_MOTOR_STEPS * RA_GEAR_TRAIN * RA_MICRO_STEPS;
 double secondsForFullTurn = 24.00 * HOURS_IN_SEC;
-double secondsPerStep = secondsForFullTurn / stepsPerFullTurn;
+double secondsPerStep = stepsPerFullTurn / secondsForFullTurn;
 long positionTime = 0;
 
 ThreeWire myWire(WATCH_DAT_PIN, WATCH_CLK_PIN, WATCH_RST_PIN);
@@ -60,7 +60,9 @@ void loop()
   Serial.print("Late time: ");
   Serial.println(lateTime);
 
-  updatePosition(lateTime);
+  if (lateTime > 0) {
+    updatePosition(1);
+  }
 }
 
 long getLateTime()
@@ -87,7 +89,7 @@ void updatePosition(long lateTime)
 
 long getStepsToMove(long sec)
 {
-  return sec / secondsPerStep;
+  return sec * secondsPerStep;
 }
 
 void move(long steps)
